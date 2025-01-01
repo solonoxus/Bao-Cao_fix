@@ -91,7 +91,7 @@
 
     .stock-warning {
         font-size: 0.8em;
-        color: #ff0000;
+        color: #1eff00;
         margin-top: 5px;
     }
 
@@ -269,6 +269,16 @@
 								</div>
 							</div>
 
+							<div class="payment-method-section">
+								<div class="form-group">
+									<label>Phương thức thanh toán:</label>
+									<select name="paymentMethod" id="paymentMethod" class="form-control">
+										<option value="cod">Thanh toán khi nhận hàng (COD)</option>
+										<option value="vnpay">Thanh toán qua VNPay</option>
+									</select>
+								</div>
+							</div>
+
 							<button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
 								Proceed to Checkout
 							</button>
@@ -381,4 +391,53 @@
 		// Khởi tạo hiển thị
 		updateTotalDisplay();
 	});
+</script>
+
+<script>
+    document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch('/cart/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+            
+            const result = await response.json();
+            
+            if (result.success && paymentMethod === 'vnpay') {
+                // Gọi API tạo URL thanh toán VNPay
+                const vnpayResponse = await fetch('/create_payment_url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        orderId: result.orderId
+                    })
+                });
+                
+                const vnpayResult = await vnpayResponse.json();
+                
+                if (vnpayResult.code === '00') {
+                    // Chuyển hướng đến trang thanh toán VNPay
+                    window.location.href = vnpayResult.data;
+                } else {
+                    alert('Có lỗi xảy ra khi tạo thanh toán!');
+                }
+            } else {
+                // Nếu là COD, reload trang
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi xử lý đơn hàng!');
+        }
+    });
 </script>

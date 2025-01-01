@@ -55,7 +55,7 @@
 
 * Clone repository Project-CNW về máy thông qua dòng lệnh sau:
 ```bash
-> git clone https://github.com/solonoxus/Bao-Cao_fix.git
+> git clone https://github.com/DuongThanhTin/Project-CNW
 ```
 * Khi đã clone về máy, tạo file .env trong thư mục chứa phần mềm. Trong file .env: SECRECT_KEY = 'PMCL_CNW'
 
@@ -85,5 +85,8 @@
 * [connect-mongodb-session](https://www.npmjs.com/package/connect-mongodb-session)
 
 ## Đội ngũ phát triển
-* [Nguyễn Đức Lộc](https://github.com/solonoxus/Bao-Cao_fix.git) (MSSV: 671626 - Lớp:K67CNTTA)
+* [Dương Thạnh Tín](https://github.com/DuongThanhTin) (MSSV: 16521241 - Lớp: PMCL2016.3)
+* [Nguyễn Phương Vương](https://github.com/phuongvuong98)
 
+## Giấy phép
+* [MIT](https://github.com/DuongThanhTin/Project-CNW/blob/master/LICENSE)

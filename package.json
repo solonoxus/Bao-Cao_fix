@@ -35,7 +35,9 @@
     "path": "^0.12.7",
     "promise": "^8.0.3",
     "pug": "^2.0.4",
+    "qs": "^6.11.2",
     "querystring": "^0.2.1",
+    "dateformat": "^4.6.3",
     "sequelize": "^5.21.2"
   },
   "devDependencies": {

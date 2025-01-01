@@ -6,6 +6,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  orderId: {
+    type: String,
+    unique: true
+  },
   items: [{
     productId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +44,16 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['pending', 'processing', 'completed', 'cancelled'],
+    default: 'pending'
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['cod', 'vnpay'],
+    default: 'cod'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed'],
     default: 'pending'
   },
   createdAt: {

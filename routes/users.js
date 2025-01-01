@@ -4,8 +4,13 @@ const router = express.Router();
 const cors = require("cors");
 const isAuth = require("../middleware/is-auth");
 const UserController = require("../apicontrollers/user");
+const VNPayController = require("../apicontrollers/vnpay");
 
 router.use(cors());
+
+// VNPay Routes
+router.post("/create_payment_url", isAuth, VNPayController.createPayment);
+router.get("/vnpay_return", VNPayController.vnpayReturn);
 
 //Sign Up
 router.get("/signup", UserController.getSignUp);

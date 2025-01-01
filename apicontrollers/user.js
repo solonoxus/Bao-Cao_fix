@@ -482,7 +482,7 @@ module.exports = {
   },
   postCheckout: async function (req, res) {
     try {
-      const { fullname, mobilenumber, address, selectedProducts } = req.body;
+      const { fullname, mobilenumber, address, selectedProducts, paymentMethod } = req.body;
       
       if (!selectedProducts) {
         req.flash('errorMessage', 'Không có sản phẩm nào được chọn.');
@@ -503,37 +503,10 @@ module.exports = {
       const user = await UserModel.findById(req.session.user._id)
         .populate('cart.items.productId');
 
-      if (!user || !user.cart || !user.cart.items) {
-        req.flash('errorMessage', 'Giỏ hàng không tồn tại.');
-        req.flash('error', 'true');
-        return res.redirect('/cart');
-      }
-
       // Lọc các sản phẩm được chọn
       const selectedItems = user.cart.items.filter(item => 
         selectedProductIds.includes(item.productId._id.toString())
       );
-
-      if (selectedItems.length === 0) {
-        req.flash('errorMessage', 'Không tìm thấy sản phẩm được chọn trong giỏ hàng.');
-        req.flash('error', 'true');
-        return res.redirect('/cart');
-      }
-
-      // Kiểm tra số lượng tồn kho trước khi xử lý
-      for (const item of selectedItems) {
-        const product = await ProductModel.findById(item.productId._id);
-        if (!product) {
-          req.flash('errorMessage', `Sản phẩm không tồn tại trong hệ thống.`);
-          req.flash('error', 'true');
-          return res.redirect('/cart');
-        }
-        if (product.quantity < item.quantity) {
-          req.flash('errorMessage', `Sản phẩm ${product.name} không đủ số lượng trong kho.`);
-          req.flash('error', 'true');
-          return res.redirect('/cart');
-        }
-      }
 
       // Tính tổng tiền các sản phẩm được chọn
       const total = selectedItems.reduce((sum, item) => {
@@ -554,11 +527,21 @@ module.exports = {
         mobilenumber,
         address,
         totalAmount: total,
-        status: 'pending'
+        status: 'pending',
+        paymentMethod: paymentMethod || 'cod',
+        paymentStatus: 'pending'
       });
 
       // Lưu đơn hàng
       await newOrder.save();
+
+      // Nếu thanh toán qua VNPay
+      if (paymentMethod === 'vnpay') {
+        return res.json({
+          success: true,
+          orderId: newOrder._id
+        });
+      }
 
       // Cập nhật số lượng sản phẩm trong kho
       for (const item of selectedItems) {
@@ -583,8 +566,8 @@ module.exports = {
       req.flash('error', 'false');
       res.redirect('/cart');
     } catch (err) {
-      console.log('Checkout error:', err);
-      req.flash('errorMessage', 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+      console.log(err);
+      req.flash('errorMessage', 'Đã xảy ra lỗi khi đặt hàng.');
       req.flash('error', 'true');
       res.redirect('/cart');
     }
