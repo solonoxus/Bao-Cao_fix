@@ -1,0 +1,56 @@
+<%- include('includes/head.ejs') %>
+
+<style>
+    .error-container {
+        text-align: center;
+        padding: 100px 0;
+    }
+    
+    .error-code {
+        font-size: 120px;
+        color: #717fe0;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    
+    .error-message {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 30px;
+    }
+    
+    .back-home {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #717fe0;
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s;
+    }
+    
+    .back-home:hover {
+        background-color: #5b69c2;
+        transform: translateY(-2px);
+    }
+</style>
+
+<body class="animsition">
+    <%- include('includes/header.ejs') %>
+
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">Oops! Trang bạn đang tìm kiếm không tồn tại.</div>
+        <a href="/" class="back-home">Về Trang Chủ</a>
+    </div>
+
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+        <span class="symbol-btn-back-to-top">
+            <i class="zmdi zmdi-chevron-up"></i>
+        </span>
+    </div>
+
+    <%- include('includes/footer.ejs') %>
+    <%- include('includes/end.ejs') %>
+</body>

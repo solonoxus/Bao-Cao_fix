@@ -1,0 +1,30 @@
+<%- include('../includes/head.ejs') %>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main class="container mt-4">
+        <h1>Đơn hàng của tôi</h1>
+        <% if (orders.length > 0) { %>
+            <div class="list-group">
+                <% orders.forEach(order => { %>
+                    <a href="/order/<%= order._id %>" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Đơn hàng #<%= order._id %></h5>
+                            <small><%= new Date(order.createdAt).toLocaleDateString('vi-VN') %></small>
+                        </div>
+                        <p class="mb-1">Người nhận: <%= order.fullname %></p>
+                        <p class="mb-1">Địa chỉ: <%= order.address %></p>
+                        <p class="mb-1">Số điện thoại: <%= order.mobilenumber %></p>
+                        <p class="mb-1">Tổng tiền: <%= order.totalAmount.toLocaleString('vi-VN') %> đ</p>
+                        <small class="text-muted">Trạng thái: <%= order.status %></small>
+                    </a>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="alert alert-info">
+                Bạn chưa có đơn hàng nào.
+            </div>
+        <% } %>
+    </main>
+<%- include('../includes/end.ejs') %>

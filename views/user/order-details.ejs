@@ -1,0 +1,61 @@
+<%- include('../includes/head.ejs') %>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main class="container mt-4">
+        <h1>Chi tiết đơn hàng #<%= order._id %></h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Thông tin đơn hàng</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Ngày đặt:</strong> <%= new Date(order.createdAt).toLocaleDateString('vi-VN') %></p>
+                <p><strong>Người nhận:</strong> <%= order.fullname %></p>
+                <p><strong>Địa chỉ:</strong> <%= order.address %></p>
+                <p><strong>Số điện thoại:</strong> <%= order.mobilenumber %></p>
+                <p><strong>Trạng thái:</strong> <%= order.status %></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sản phẩm</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% order.items.forEach(item => { %>
+                                <tr>
+                                    <td><%= item.productId.name %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td><%= item.price.toLocaleString('vi-VN') %> đ</td>
+                                    <td><%= (item.price * item.quantity).toLocaleString('vi-VN') %> đ</td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                <td><strong><%= order.totalAmount.toLocaleString('vi-VN') %> đ</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/orders" class="btn btn-secondary">Quay lại danh sách đơn hàng</a>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

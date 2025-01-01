@@ -1,0 +1,331 @@
+<%- include('./includes/head.ejs') %>
+
+<style>
+    .blog-hero {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/blog-hero.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    .blog-hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .blog-hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 4rem 0;
+    }
+
+    .blog-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .blog-card-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .blog-card-content {
+        padding: 1.5rem;
+    }
+
+    .blog-category {
+        color: #717fe0;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .blog-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: #333;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .blog-excerpt {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .blog-meta {
+        display: flex;
+        align-items: center;
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .blog-meta img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .blog-search {
+        background: #f8f9fa;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: #717fe0;
+        outline: none;
+    }
+
+    .blog-categories {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .category-tag {
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        background: #f8f9fa;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .category-tag:hover,
+    .category-tag.active {
+        background: #717fe0;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .blog-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .blog-grid {
+            grid-template-columns: 1fr;
+            padding: 2rem 1rem;
+        }
+    }
+</style>
+
+<body class="animsition">
+    <%- include('./includes/header.ejs') %>
+
+    <!-- Blog Hero -->
+    <section class="blog-hero">
+        <div class="container">
+            <h1>Our Latest Stories</h1>
+            <p>Discover the latest news, tips, and insights about Apple products and technology</p>
+        </div>
+    </section>
+
+    <!-- Blog Search -->
+    <div class="blog-search">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search articles...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Categories -->
+    <div class="container">
+        <div class="blog-categories">
+            <div class="category-tag active">All</div>
+            <div class="category-tag">News</div>
+            <div class="category-tag">Reviews</div>
+            <div class="category-tag">Tips & Tricks</div>
+            <div class="category-tag">Technology</div>
+        </div>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="container">
+        <div class="blog-grid">
+            <!-- Blog Card 1 -->
+            <div class="blog-card">
+                <img src="/images/blog1.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">News</div>
+                    <h3 class="blog-title">iPhone 15 Pro: A New Era of Mobile Photography</h3>
+                    <p class="blog-excerpt">Discover how the latest iPhone is revolutionizing mobile photography with its advanced camera system...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author1.jpg" alt="Author">
+                        <span>John Doe • 5 days ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Card 2 -->
+            <div class="blog-card">
+                <img src="/images/blog2.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">Reviews</div>
+                    <h3 class="blog-title">MacBook Pro M3: Power Meets Efficiency</h3>
+                    <p class="blog-excerpt">An in-depth look at Apple's latest MacBook Pro and how it's changing the game for professionals...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author2.jpg" alt="Author">
+                        <span>Jane Smith • 1 week ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Card 3 -->
+            <div class="blog-card">
+                <img src="/images/blog3.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">Tips & Tricks</div>
+                    <h3 class="blog-title">10 Hidden Features in iOS 17</h3>
+                    <p class="blog-excerpt">Unlock the full potential of your iPhone with these lesser-known but powerful features...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author3.jpg" alt="Author">
+                        <span>Mike Johnson • 2 weeks ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Card 4 -->
+            <div class="blog-card">
+                <img src="/images/blog4.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">Technology</div>
+                    <h3 class="blog-title">The Future of Apple Watch</h3>
+                    <p class="blog-excerpt">Exploring the upcoming features and innovations in Apple's wearable technology...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author4.jpg" alt="Author">
+                        <span>Sarah Lee • 3 weeks ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Card 5 -->
+            <div class="blog-card">
+                <img src="/images/blog5.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">News</div>
+                    <h3 class="blog-title">Apple's Vision Pro: A New Reality</h3>
+                    <p class="blog-excerpt">How Apple's latest innovation is set to transform the way we interact with technology...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author5.jpg" alt="Author">
+                        <span>David Wilson • 1 month ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Card 6 -->
+            <div class="blog-card">
+                <img src="/images/blog6.jpg" alt="Blog Image" class="blog-card-img">
+                <div class="blog-card-content">
+                    <div class="blog-category">Reviews</div>
+                    <h3 class="blog-title">AirPods Pro 2: Worth the Upgrade?</h3>
+                    <p class="blog-excerpt">A detailed comparison between the new AirPods Pro and their predecessor...</p>
+                    <div class="blog-meta">
+                        <img src="/images/author6.jpg" alt="Author">
+                        <span>Emma Brown • 1 month ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load More Button -->
+    <div class="container text-center pb-5">
+        <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+            Load More
+        </button>
+    </div>
+
+    <%- include('./includes/footer.ejs') %>
+
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+        <span class="symbol-btn-back-to-top">
+            <i class="zmdi zmdi-chevron-up"></i>
+        </span>
+    </div>
+
+    <%- include('./includes/end.ejs') %>
+
+    <script>
+        $(document).ready(function() {
+            // Category filter
+            $('.category-tag').click(function() {
+                $('.category-tag').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Search functionality
+            $('.search-input').on('input', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                $('.blog-card').each(function() {
+                    var title = $(this).find('.blog-title').text().toLowerCase();
+                    var excerpt = $(this).find('.blog-excerpt').text().toLowerCase();
+                    if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            // Load more functionality
+            var visibleCards = 6;
+            var cardIncrement = 3;
+            var $cards = $('.blog-card');
+            var totalCards = $cards.length;
+
+            // Initially hide cards beyond the visible limit
+            $cards.slice(visibleCards).hide();
+
+            $('.size-103').click(function() {
+                visibleCards += cardIncrement;
+                $cards.slice(0, visibleCards).show();
+                
+                if (visibleCards >= totalCards) {
+                    $(this).hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

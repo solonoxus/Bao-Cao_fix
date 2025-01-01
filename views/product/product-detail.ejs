@@ -1,0 +1,264 @@
+<%- include('../includes/head.ejs') %>
+<body class="animsition">
+
+    <%- include("../includes/header.ejs")%>
+<style>
+	.product-detail-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+.product-value {
+    color: #2980b9;
+    word-wrap: break-word; /* Hoặc sử dụng overflow-wrap: break-word; */
+    max-width: 70%; /* Đảm bảo không vượt quá chiều rộng của phần tử cha */
+}
+.product-label {
+    font-weight: bold;
+    color: #333;
+	
+}
+
+.product-value {
+    color: #2980b9;
+}
+
+.quantity-row {
+    align-items: center;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.btn-quantity {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+    margin: 0 10px;
+}
+
+.product-review {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.review-stars img {
+    width: 20px;
+    height: 20px;
+}
+
+.review-count {
+    margin-left: 10px;
+    color: #777;
+}
+
+.cart-button {
+    margin-top: 20px;
+}
+
+.btn-add-to-cart {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-add-to-cart:hover {
+    background-color: #2980b9;
+}
+</style>
+  <!--Main layout-->
+  <main class="mt-5 pt-4">
+    <div class="container dark-grey-text mt-5">
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <img src="<%=product.imagePath%>" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!--Content-->
+          <div class="p-4">
+			<h2 class="mtext-105 cl2 js-name-detail p-b-14 modal-productname" id="data_productname" value="	<%= product.productname %>">
+				<%= product.productname %>
+			</h2>
+			<!--Content-->
+			<div class="product-detail-container">
+				<div class="product-info">
+					<div class="product-row">
+						<div class="product-label">Price ($):</div>
+						<div id="data_price" class="product-value"><%= product.price %></div>
+					</div>
+					<div class="product-row">
+						<div class="product-label">Category:</div>
+						<div id="data_category" class="product-value"><%= product.category %></div>
+					</div>
+					<div class="product-row">
+						<div class="product-label">Description:</div>
+						<div id="data_description" class="product-value"><%= product.description %></div>
+					</div>
+					<div class="product-row quantity-row">
+						<div class="product-label">Quantity:</div>
+						<div class="quantity-controls">
+							<button class="btn-quantity" id="btn-decrease"><i class="fs-16 zmdi zmdi-minus"></i></button>
+							<input class="quantity-input" type="number" name="productNumber" id="productQuantity" value="1">
+							<button class="btn-quantity" id="btn-increase"><i class="fs-16 zmdi zmdi-plus"></i></button>
+						</div>
+					</div>
+					<div class="product-review">
+						<div class="review-stars">
+							<img src="/images/star.svg" alt="#" />
+							<img src="/images/star.svg" alt="#" />
+							<img src="/images/star.svg" alt="#" />
+							<img src="/images/star.svg" alt="#" />
+							<img src="/images/star.svg" alt="#" />
+						</div>
+						<div class="review-count">| 10 Reviews</div>
+					</div>
+					<div class="cart-button">
+						<input type="hidden" id="productId" name="productId" value="<%=product._id%>">
+						<% if (isAuthenticated) { %>
+						<button onclick="postCartModal()" class="btn-add-to-cart">Add to cart</button>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</p>
+          </div>
+          <!--Content-->
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+      <hr>
+
+      <!--Grid row-->
+      <div class="row d-flex justify-content-center wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 text-center">
+
+          <h4 class="my-4 h4">Additional information</h4>
+
+          <p>Modern electronic commerce typically uses the World Wide Web for at least one part of the transaction's life cycle although it may also use other technologies such as e-mail. Typical e-commerce transactions include the purchase of online iPhone, Macbook, Airpods and Apple watch purchases.</p>
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-12 mb-4">
+
+          <img src="https://halomobile.vn/wp-content/uploads/2019/05/halomobile-iphone-11-den-min.png" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4">
+
+          <img src="http://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp13touch-silver-select-201807?wid=892&hei=820&&qlt=80&.v=1529520056377" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4">
+
+          <img src="https://www.mytrendyphone.eu/images/Apple-AirPods-2-with-Wireless-Charging-Case-MRXJ2ZM-A-White-21032019-01-p.jpg" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+    </div>
+  </main>
+
+  
+
+	<%- include('../includes/footer.ejs') %>			
+	<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+	
+	<%- include('../includes/cart-r-side.ejs') %>
+	<%- include('../includes/modal.ejs') %>
+<%- include('../includes/end.ejs') %>
+
+<script>
+	function postCartModal() {
+		var quantity = parseInt($("#productQuantity").val());
+		var productId = $("#productId").val();
+		var productName = $('#data_productname').text();
+
+		// Kiểm tra số lượng sản phẩm
+		if (isNaN(quantity) || quantity <= 0) {
+			swal("Số lượng không hợp lệ!", "Vui lòng nhập số lượng lớn hơn 0.", "error");
+			return;
+		}
+
+		$.ajax({
+			url: "/cart",
+			type: "POST",
+			data: {
+				productId: productId,
+				productNumber: quantity
+			},
+			success: function (res) {
+				swal(productName, " đã được thêm vào giỏ hàng!", "success");
+				refreshCartOrder();
+			},
+			error: function (err) {
+				console.log(err);
+				swal("Thất bại", "Thêm sản phẩm vào giỏ hàng không thành công.", "error");
+			}
+		});
+	}
+</script>

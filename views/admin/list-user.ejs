@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<%- include("../includes/head.ejs")%>
+<%- include('../admin/header-admin.ejs') %>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/admin-list.css">
+    <title>Manager Users</title>
+</head>
+<div class="p-b-10 p-t-50">
+    <h3 class="ltext-103 cl5">
+        <div style="display: flex; justify-content: center;">Manager User</div>
+    </h3>
+</div>
+
+<body>
+    <div class="bodyList">
+        <div class="product-status mg-tb-15">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="product-status-wrap">
+                            
+                            <div class="table-wrapper">
+                                <table class="list">
+                                    <colgroup>
+                                        <col class="col-01">
+                                        <col class="col-02">
+                                        <col class="col-03">
+                                        <col class="col-04">
+                                        <col class="col-05">
+                                        <col class="col-06">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th> Username</th>
+                                            <th> Age</th>
+                                            <th>Phone</th>
+                                            <th>Role</th>
+                                            <th>Created</th>
+                                            <th>Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <% var i =0 %>
+                                    <form method="POST" action="/adminTin/managerusers/delete">
+                                        <% listusers.forEach(function (user) { %>
+                                        <tbody>
+                                            <tr>
+                                                <input type="hidden" value="<%= user._id %>" name="_id" id="_id">
+                                                <td name="username" id="username">  <div class="flex-c-m">
+                                                    <%= user.username %>
+                                                </div></td>
+                                                <td style="width: 15%; white-space:nowrap; overflow:auto">
+                                                 
+                                                    <div class="flex-c-m">
+                                                        <%= user.age %>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex-c-m">
+                                                        <%= user.phone %>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex-c-m">
+                                                        <%= user.role %>
+                                                    </div>
+                                                </td>
+                                                <td> <div class="flex-c-m">
+                                                    <%= user.created %>
+                                                </div></td>
+
+                                                <div class="editTable">
+                                                    <td style="display:flex; justify-content:space-evenly;">
+                                                        <a href="../adminTin/managerusers/update/<%= user._id %>"
+                                                            data-toggle="tooltip" data-placement="top" title="Edit">
+                                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                        </a>
+
+                                                        <a href="../adminTin/managerusers/delete/<%= user._id %>"
+                                                            data-toggle="tooltip" data-placement="top" title="Delete">
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </a>
+                                                    </td>
+                                                </div>
+                                            </tr>
+                                        </tbody>
+                                        <% user.count =i %>
+                                        <% user.count = user.count+1 %>
+                                        <% i = user.count %>
+                                        <% }) %>
+                                    </form>
+                                </table>
+                            </div>
+                            <div class="Sum">
+                                Tổng số user là: <%= i %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to top -->
+        <div class="btn-back-to-top" id="myBtn">
+            <span class="symbol-btn-back-to-top">
+                <i class="zmdi zmdi-chevron-up"></i>
+            </span>
+        </div>
+    </div>
+
+</body>
+
+</html>
