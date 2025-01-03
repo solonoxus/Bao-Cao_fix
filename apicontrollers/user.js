@@ -1,11 +1,15 @@
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
 const UserModel = require("../models/user");
 const ProductModel = require("../models/newproduct");
 const OrderModel = require("../models/order");
 
 const jwt = require("jsonwebtoken");
 const url = require("url");
+
+// Tắt deprecation warning
+mongoose.set('useFindAndModify', false);
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -484,6 +488,28 @@ module.exports = {
     try {
       const { fullname, mobilenumber, address, selectedProducts, paymentMethod } = req.body;
       
+      // Validate required fields
+      if (!fullname || !mobilenumber || !address) {
+        req.flash('errorMessage', 'Vui lòng điền đầy đủ thông tin giao hàng.');
+        req.flash('error', 'true');
+        return res.redirect('/cart');
+      }
+
+      // Validate phone number format
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(mobilenumber)) {
+        req.flash('errorMessage', 'Số điện thoại không hợp lệ.');
+        req.flash('error', 'true');
+        return res.redirect('/cart');
+      }
+
+      // Validate payment method
+      if (!['cod', 'vnpay'].includes(paymentMethod)) {
+        req.flash('errorMessage', 'Phương thức thanh toán không hợp lệ.');
+        req.flash('error', 'true');
+        return res.redirect('/cart');
+      }
+
       if (!selectedProducts) {
         req.flash('errorMessage', 'Không có sản phẩm nào được chọn.');
         req.flash('error', 'true');
@@ -491,7 +517,14 @@ module.exports = {
       }
 
       // Parse selected product IDs
-      const selectedProductIds = JSON.parse(selectedProducts);
+      let selectedProductIds;
+      try {
+        selectedProductIds = JSON.parse(selectedProducts);
+      } catch (error) {
+        req.flash('errorMessage', 'Dữ liệu sản phẩm không hợp lệ.');
+        req.flash('error', 'true');
+        return res.redirect('/cart');
+      }
       
       if (!Array.isArray(selectedProductIds) || selectedProductIds.length === 0) {
         req.flash('errorMessage', 'Không có sản phẩm nào được chọn.');
@@ -503,10 +536,31 @@ module.exports = {
       const user = await UserModel.findById(req.session.user._id)
         .populate('cart.items.productId');
 
+      if (!user) {
+        req.flash('errorMessage', 'Không tìm thấy thông tin người dùng.');
+        req.flash('error', 'true');
+        return res.redirect('/cart');
+      }
+
       // Lọc các sản phẩm được chọn
       const selectedItems = user.cart.items.filter(item => 
         selectedProductIds.includes(item.productId._id.toString())
       );
+
+      // Kiểm tra số lượng tồn kho
+      for (const item of selectedItems) {
+        const product = await ProductModel.findById(item.productId._id);
+        if (!product) {
+          req.flash('errorMessage', `Sản phẩm ${item.productId.name} không tồn tại.`);
+          req.flash('error', 'true');
+          return res.redirect('/cart');
+        }
+        if (product.quantity < item.quantity) {
+          req.flash('errorMessage', `Sản phẩm ${product.name} không đủ số lượng trong kho.`);
+          req.flash('error', 'true');
+          return res.redirect('/cart');
+        }
+      }
 
       // Tính tổng tiền các sản phẩm được chọn
       const total = selectedItems.reduce((sum, item) => {
@@ -528,50 +582,116 @@ module.exports = {
         address,
         totalAmount: total,
         status: 'pending',
-        paymentMethod: paymentMethod || 'cod',
+        paymentMethod: paymentMethod,
         paymentStatus: 'pending'
       });
 
       // Lưu đơn hàng
-      await newOrder.save();
+      const savedOrder = await newOrder.save();
 
       // Nếu thanh toán qua VNPay
       if (paymentMethod === 'vnpay') {
         return res.json({
           success: true,
-          orderId: newOrder._id
+          data: vnpUrl,
+          orderCode: savedOrder.orderId
         });
       }
 
-      // Cập nhật số lượng sản phẩm trong kho
-      for (const item of selectedItems) {
-        const product = await ProductModel.findById(item.productId._id);
-        product.quantity -= item.quantity;
-        await product.save();
+      try {
+        // Cập nhật số lượng sản phẩm trong kho
+        for (const item of selectedItems) {
+          const product = await ProductModel.findById(item.productId._id);
+          product.quantity -= item.quantity;
+          await product.save();
+        }
+
+        // Convert string IDs to ObjectId
+        const productObjectIds = selectedProductIds.map(id => new mongoose.Types.ObjectId(id));
+
+        // Cập nhật giỏ hàng bằng findOneAndUpdate
+        const updatedUser = await UserModel.findOneAndUpdate(
+          { _id: user._id },
+          {
+            $pull: {
+              'cart.items': {
+                'productId': { $in: productObjectIds }
+              }
+            }
+          },
+          { new: true }
+        );
+
+        // Tính lại tổng tiền giỏ hàng
+        const cartTotal = await UserModel.aggregate([
+          { $match: { _id: new mongoose.Types.ObjectId(user._id) } },
+          { $unwind: { path: '$cart.items', preserveNullAndEmptyArrays: true } },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'cart.items.productId',
+              foreignField: '_id',
+              as: 'product'
+            }
+          },
+          { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+          {
+            $group: {
+              _id: '$_id',
+              total: {
+                $sum: {
+                  $cond: [
+                    { $and: [
+                      { $isArray: '$cart.items' },
+                      { $gt: [{ $size: '$cart.items' }, 0] }
+                    ]},
+                    { $multiply: ['$cart.items.quantity', '$product.price'] },
+                    0
+                  ]
+                }
+              }
+            }
+          }
+        ]);
+
+        // Cập nhật tổng tiền
+        await UserModel.findOneAndUpdate(
+          { _id: user._id },
+          { 'cart.sum': cartTotal.length > 0 ? cartTotal[0].total : 0 },
+          { new: true }
+        );
+        
+        // Trả về response thành công
+        return res.json({
+          success: true,
+          message: 'Đặt hàng thành công!',
+          orderCode: savedOrder.orderId
+        });
+      } catch (error) {
+        console.error('Lỗi sau khi lưu đơn hàng:', error);
+        // Đơn hàng đã được tạo nhưng xử lý sau gặp lỗi
+        // Cập nhật trạng thái đơn hàng thành 'processing' để admin xử lý
+        try {
+          await OrderModel.findByIdAndUpdate(
+            savedOrder._id,
+            { status: 'processing' },
+            { new: true }
+          );
+        } catch (err) {
+          console.error('Không thể cập nhật trạng thái đơn hàng:', err);
+        }
+        return res.status(500).json({
+          success: false,
+          message: `Đơn hàng đã được tạo (Mã: ${savedOrder.orderId}) nhưng có lỗi xảy ra. Chúng tôi sẽ liên hệ với bạn sớm nhất!`
+        });
       }
-
-      // Xóa sản phẩm đã đặt khỏi giỏ hàng
-      user.cart.items = user.cart.items.filter(item => 
-        !selectedProductIds.includes(item.productId._id.toString())
-      );
-      
-      // Cập nhật tổng tiền giỏ hàng
-      user.cart.sum = user.cart.items.reduce((sum, item) => {
-        return sum + (item.productId.price * item.quantity);
-      }, 0);
-
-      await user.save();
-      
-      req.flash('errorMessage', 'Đặt hàng thành công!');
-      req.flash('error', 'false');
-      res.redirect('/cart');
     } catch (err) {
       console.log(err);
-      req.flash('errorMessage', 'Đã xảy ra lỗi khi đặt hàng.');
-      req.flash('error', 'true');
-      res.redirect('/cart');
+      req.flash('errorMessage', 'Không thể tải danh sách đơn hàng.');
+      res.redirect('/');
     }
   },
+
   getOrders: async function(req, res) {
     try {
       const orders = await OrderModel.find({ userId: req.session.user._id })

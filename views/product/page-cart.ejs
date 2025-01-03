@@ -388,6 +388,60 @@
 			row.find('.total-prod').text('$' + (price * val).toFixed(2));
 		});
 
+		// Xử lý form checkout
+		$('#checkout-form').on('submit', function(e) {
+			e.preventDefault();
+			
+			const selectedProducts = [];
+			$('.product-checkbox:checked').each(function() {
+				selectedProducts.push($(this).val());
+			});
+			
+			if (selectedProducts.length === 0) {
+				alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
+				return;
+			}
+			
+			$('#selected-products').val(JSON.stringify(selectedProducts));
+			
+			const formData = $(this).serialize();
+			const paymentMethod = $('#paymentMethod').val();
+			
+			$.ajax({
+				url: '/cart/checkout',
+				method: 'POST',
+				data: formData,
+				success: function(response) {
+					if (paymentMethod === 'vnpay' && response.success) {
+						// Chuyển hướng đến trang thanh toán VNPay
+						window.location.href = response.data;
+					} else {
+						// Nếu thanh toán COD thành công
+						if (response.success) {
+							// Cập nhật UI
+							$('.product-checkbox:checked').closest('tr').remove();
+							calculateSelectedTotal();
+							updateCartCount();
+							
+							// Hiển thị thông báo thành công
+							alert('Đặt hàng thành công! Mã đơn hàng của bạn là: ' + response.orderCode);
+							
+							// Làm mới trang sau 1 giây
+							setTimeout(function() {
+								window.location.reload();
+							}, 1000);
+						} else {
+							alert(response.message || 'Có lỗi xảy ra khi đặt hàng');
+						}
+					}
+				},
+				error: function(xhr) {
+					const response = xhr.responseJSON;
+					alert(response?.message || 'Có lỗi xảy ra khi xử lý đơn hàng');
+				}
+			});
+		});
+
 		// Khởi tạo hiển thị
 		updateTotalDisplay();
 	});

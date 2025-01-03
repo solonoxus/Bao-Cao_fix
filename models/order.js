@@ -8,7 +8,12 @@ const orderSchema = new mongoose.Schema({
   },
   orderId: {
     type: String,
-    unique: true
+    unique: true,
+    required: true,
+    default: function() {
+      // Tạo orderId theo format: ORD + timestamp
+      return 'ORD' + Date.now();
+    }
   },
   items: [{
     productId: {
@@ -49,11 +54,11 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: ['cod', 'vnpay'],
-    default: 'cod'
+    required: true
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'failed'],
+    enum: ['pending', 'completed', 'failed'],
     default: 'pending'
   },
   createdAt: {
